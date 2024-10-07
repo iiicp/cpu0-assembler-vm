@@ -18,7 +18,7 @@ void AS::VisitLD(LD *t) {
 
     std::visit(overload{
         [&](llvm::StringRef symbol) {
-            auto inst = symbolTable_.at(symbol);
+            auto inst = symbolTable_.find(symbol)->getSecond();
             cx = inst->Addr() - pc;
         },
         [&](int n) {
@@ -35,7 +35,7 @@ void AS::VisitST(ST *t) {
 
     std::visit(overload{
         [&](llvm::StringRef symbol) {
-            auto inst = symbolTable_.at(symbol);
+            auto inst = symbolTable_.find(symbol)->getSecond();
             cx = inst->Addr() - pc;
         },
         [&](int n) {
@@ -52,7 +52,7 @@ void AS::VisitLDB(LDB *t) {
 
     std::visit(overload{
         [&](llvm::StringRef symbol) {
-            auto inst = symbolTable_.at(symbol);
+            auto inst = symbolTable_.find(symbol)->getSecond();
             cx = inst->Addr() - pc;
         },
         [&](int n) {
@@ -69,7 +69,7 @@ void AS::VisitSTB(STB *t) {
 
     std::visit(overload{
         [&](llvm::StringRef symbol) {
-            auto inst = symbolTable_.at(symbol);
+            auto inst = symbolTable_.find(symbol)->getSecond();
             cx = inst->Addr() - pc;
         },
         [&](int n) {
@@ -211,43 +211,43 @@ void AS::VisitSHR(SHR *t) {
     t->SetObjCode(obj); 
 }
 void AS::VisitJEQ(JEQ *t) {
-    auto inst = symbolTable_.at(t->cx);
+    auto inst = symbolTable_.find(t->cx)->getSecond();
     cx = inst->Addr() - pc;
     std::string obj = hex(t->op, 2) + hex(cx, 6);
     t->SetObjCode(obj); 
 }
 void AS::VisitJNE(JNE *t) {
-    auto inst = symbolTable_.at(t->cx);
+    auto inst = symbolTable_.find(t->cx)->getSecond();
     cx = inst->Addr() - pc;
     std::string obj = hex(t->op, 2) + hex(cx, 6);
     t->SetObjCode(obj);     
 }
 void AS::VisitJLT(JLT *t) {
-    auto inst = symbolTable_.at(t->cx);
+    auto inst = symbolTable_.find(t->cx)->getSecond();
     cx = inst->Addr() - pc;
     std::string obj = hex(t->op, 2) + hex(cx, 6);
     t->SetObjCode(obj);     
 }
 void AS::VisitJGT(JGT *t) {
-    auto inst = symbolTable_.at(t->cx);
+    auto inst = symbolTable_.find(t->cx)->getSecond();
     cx = inst->Addr() - pc;
     std::string obj = hex(t->op, 2) + hex(cx, 6);
     t->SetObjCode(obj); 
 }
 void AS::VisitJLE(JLE *t) {
-    auto inst = symbolTable_.at(t->cx);
+    auto inst = symbolTable_.find(t->cx)->getSecond();
     cx = inst->Addr() - pc;
     std::string obj = hex(t->op, 2) + hex(cx, 6);
     t->SetObjCode(obj);     
 }
 void AS::VisitJGE(JGE *t) {
-    auto inst = symbolTable_.at(t->cx);
+    auto inst = symbolTable_.find(t->cx)->getSecond();
     cx = inst->Addr() - pc;
     std::string obj = hex(t->op, 2) + hex(cx, 6);
     t->SetObjCode(obj);     
 }
 void AS::VisitJMP(JMP *t) {
-    auto inst = symbolTable_.at(t->cx);
+    auto inst = symbolTable_.find(t->cx)->getSecond();
     cx = inst->Addr() - pc;
     std::string obj = hex(t->op, 2) + hex(cx, 6);
     t->SetObjCode(obj);     
@@ -258,7 +258,7 @@ void AS::VisitSWI(SWI *t) {
     t->SetObjCode(obj); 
 }
 void AS::VisitCALL(CALL *t) {
-    auto inst = symbolTable_.at(t->cx);
+    auto inst = symbolTable_.find(t->cx)->getSecond();
     cx = inst->Addr() - pc;
     std::string obj = hex(t->op, 2) + hex(cx, 6);
     t->SetObjCode(obj);   
@@ -304,7 +304,7 @@ void AS::VisitWORD(WORD *t) {
     for (auto &arg : t->args) {
         std::visit(overload{
             [&](const WORD::symbol &symbol) {
-                auto inst = symbolTable_.at(symbol.s);
+                auto inst = symbolTable_.find(symbol.s)->getSecond();
                 obj += hex(inst->Addr(), 4 * 2);
             },
             [&](int n) {
@@ -319,7 +319,7 @@ void AS::VisitBYTE(BYTE *t) {
     for (auto &arg : t->args) {
         std::visit(overload{
             [&](const BYTE::symbol &symbol) {
-                auto inst = symbolTable_.at(symbol.s);
+                auto inst = symbolTable_.find(symbol.s)->getSecond();
                 obj += hex(inst->Addr(), 2);
             },
             [&](llvm::StringRef str) {
